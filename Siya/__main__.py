@@ -1,8 +1,8 @@
-import asyncio
+import logging
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 from telegram.ext import Application
+from Siya.Modules import start  # sirf start module
 
 # ------------------ Load .env ------------------ #
 load_dotenv()
@@ -13,36 +13,23 @@ API_HASH = os.getenv("API_HASH")  # Optional
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN not found in .env")
 
-# ------------------ PTB Application ------------------ #
-app = Application.builder().token(BOT_TOKEN).build()
+# ------------------ Logging ------------------ #
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
-# ------------------ Manual Module Imports ------------------ #
-from Siya.Modules import start  # Sirf start.py manually import
+def main():
+    # ✅ Single Application instance
+    application = Application.builder().token(BOT_TOKEN).build()
 
-# ------------------ Initialize Modules ------------------ #
-async def init_modules():
-    if hasattr(start, "init"):
-        await start.init(app)
-    print("[✅] start.py module loaded successfully!")
+    # Register start module
+    start.register(application)
 
-# ------------------ Main Bot Function ------------------ #
-async def main():
-    print("🚀 Siya Chat Bot starting...")
-    await init_modules()
-    print("🌟 All manual modules loaded!")
-    print("🤖 Bot is now running...")
+    print("🚀 Siya Chat Bot Started!")
 
-    await app.initialize()
-    await app.start()
-    # ✅ PTB 21+ polling
-    await app.run_polling()
-    # shutdown handled automatically after run_polling exits
+    # ✅ 21.4 style synchronous polling
+    application.run_polling()
 
-# ------------------ Entry Point ------------------ #
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\n🛑 Bot stopped by user.")
-    except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+    main()
