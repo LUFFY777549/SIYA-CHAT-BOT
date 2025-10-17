@@ -22,24 +22,24 @@ START_BUTTONS = InlineKeyboardMarkup([
      InlineKeyboardButton("HELP", callback_data="help")]
 ])
 
-# ------------------ Module Init Function ------------------ #
-async def init(app):
-    async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-        user_id = update.effective_user.id
-        username = update.effective_user.username or update.effective_user.first_name
+# ------------------ /start COMMAND ------------------ #
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    username = update.effective_user.username or update.effective_user.first_name
 
-        # Track user or group
-        if update.effective_chat.type == "private":
-            add_private_user(user_id, username)
-        else:
-            add_group_chat(update.effective_chat.id, update.effective_chat.title)
+    # Track user or group
+    if update.effective_chat.type == "private":
+        add_private_user(user_id, username)
+    else:
+        add_group_chat(update.effective_chat.id, update.effective_chat.title)
 
-        # Send start message
-        await update.message.reply_photo(
-            photo=START_IMAGE,
-            caption=START_CAPTION,
-            reply_markup=START_BUTTONS
-        )
+    # Send start message
+    await update.message.reply_photo(
+        photo=START_IMAGE,
+        caption=START_CAPTION,
+        reply_markup=START_BUTTONS
+    )
 
-    # Add /start command handler
-    app.add_handler(CommandHandler("start", start))
+# ------------------ REGISTER FUNCTION FOR MAIN.PY ------------------ #
+def register(application):
+    application.add_handler(CommandHandler("start", start_command))
