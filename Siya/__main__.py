@@ -32,15 +32,11 @@ async def main():
     print("🌟 All manual modules loaded!")
     print("🤖 Bot is now running...")
 
-    # Proper PTB 21+ initialization
     await app.initialize()
     await app.start()
-    await app.updater.start_polling()
-    
-    # Keep bot running
-    await app.updater.idle()
-    await app.stop()
-    await app.shutdown()
+    # ✅ PTB 21+ polling
+    await app.run_polling()
+    # shutdown handled automatically after run_polling exits
 
 # ------------------ Entry Point ------------------ #
 if __name__ == "__main__":
