@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, CommandHandler
 from Siya.db import add_private_user, add_group_chat
 
+# ------------------ Start Module Constants ------------------ #
 START_IMAGE = "https://files.catbox.moe/8eobds.jpg"
 START_CAPTION = """💫 ─╼⃝𖠁 𝐒𝗂𝗒𝖺 ꭙ 𝐂𝗁𝖺𝗍 𝐁𝗈𝗍 𖠁⃝╾─• 💫
 
@@ -21,7 +22,7 @@ START_BUTTONS = InlineKeyboardMarkup([
      InlineKeyboardButton("HELP", callback_data="help")]
 ])
 
-# Module init function
+# ------------------ Module Init Function ------------------ #
 async def init(app):
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = update.effective_user.id
@@ -33,10 +34,12 @@ async def init(app):
         else:
             add_group_chat(update.effective_chat.id, update.effective_chat.title)
 
+        # Send start message
         await update.message.reply_photo(
             photo=START_IMAGE,
             caption=START_CAPTION,
             reply_markup=START_BUTTONS
         )
 
+    # Add /start command handler
     app.add_handler(CommandHandler("start", start))
