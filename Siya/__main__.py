@@ -17,25 +17,30 @@ if not BOT_TOKEN:
 app = Application.builder().token(BOT_TOKEN).build()
 
 # ------------------ Manual Module Imports ------------------ #
-# ✅ Yahan manually modules import karo
-from Siya.Modules import start  # Sirf start.py
+from Siya.Modules import start  # Sirf start.py manually import
 
-# Agar module me init(application) function hai, call karo
+# ------------------ Initialize Modules ------------------ #
 async def init_modules():
     if hasattr(start, "init"):
         await start.init(app)
     print("[✅] start.py module loaded successfully!")
 
-# ------------------ Main Function ------------------ #
+# ------------------ Main Bot Function ------------------ #
 async def main():
     print("🚀 Siya Chat Bot starting...")
     await init_modules()
     print("🌟 All manual modules loaded!")
     print("🤖 Bot is now running...")
-    
+
+    # Proper PTB 21+ initialization
+    await app.initialize()
     await app.start()
     await app.updater.start_polling()
+    
+    # Keep bot running
     await app.updater.idle()
+    await app.stop()
+    await app.shutdown()
 
 # ------------------ Entry Point ------------------ #
 if __name__ == "__main__":
