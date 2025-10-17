@@ -1,54 +1,40 @@
 import asyncio
-import importlib
 import os
-import sys
 from pathlib import Path
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application
 
 # ------------------ Load .env ------------------ #
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-API_ID = os.getenv("API_ID")      # Optional if using PTB BotToken only
-API_HASH = os.getenv("API_HASH")  # Optional if using PTB BotToken only
+API_ID = os.getenv("API_ID")      # Optional
+API_HASH = os.getenv("API_HASH")  # Optional
 
 if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN not found in .env")
 
-# ------------------ Add Siya.Modules to sys.path ------------------ #
-MODULES_DIR = Path(__file__).parent / "Siya" / "Modules"
-if MODULES_DIR.exists():
-    sys.path.append(str(MODULES_DIR))
-else:
-    raise FileNotFoundError("Siya.Modules folder not found!")
-
-# ------------------ Create PTB Application ------------------ #
+# ------------------ PTB Application ------------------ #
 app = Application.builder().token(BOT_TOKEN).build()
 
-# ------------------ Async module loader ------------------ #
-async def load_modules(application):
-    for file in MODULES_DIR.glob("*.py"):
-        if file.name.startswith("__"):
-            continue
-        module_name = file.stem
-        try:
-            mod = importlib.import_module(f"Siya.Modules.{module_name}")
-            # If module has `init` function, pass application
-            if hasattr(mod, "init"):
-                await mod.init(application)
-            print(f"[✅] Loaded module: {module_name}")
-        except Exception as e:
-            print(f"[❌] Failed to load module {module_name}: {e}")
+# ------------------ Manual Module Imports ------------------ #
+# ✅ Yahan manually modules import karo
+from Siya.Modules import start  # Sirf start.py
 
-# ------------------ Main Bot Function ------------------ #
+# Agar module me init(application) function hai, call karo
+async def init_modules():
+    if hasattr(start, "init"):
+        await start.init(app)
+    print("[✅] start.py module loaded successfully!")
+
+# ------------------ Main Function ------------------ #
 async def main():
     print("🚀 Siya Chat Bot starting...")
-    await load_modules(app)
-    print("🌟 All modules loaded successfully!")
+    await init_modules()
+    print("🌟 All manual modules loaded!")
     print("🤖 Bot is now running...")
+    
     await app.start()
-    await app.updater.start_polling()  # PTB 21+ polling
+    await app.updater.start_polling()
     await app.updater.idle()
 
 # ------------------ Entry Point ------------------ #
